@@ -1,0 +1,46 @@
+local function disableDescendants(parent)
+	for _, obj in ipairs(parent:GetDescendants()) do
+		if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") then
+			obj.Enabled = false
+		elseif obj:IsA("Decal") then
+			obj.Transparency = 1
+		elseif obj:IsA("Texture") then
+			obj:Destroy()
+		end
+	end
+end
+
+-- Optimize workspace
+disableDescendants(workspace)
+
+-- Lower lighting quality
+local lighting = game:GetService("Lighting")
+lighting.GlobalShadows = false
+lighting.FogEnd = 1000
+lighting.Brightness = 1
+lighting.OutdoorAmbient = Color3.new(0.5, 0.5, 0.5)
+
+-- Remove terrain decoration
+if workspace:FindFirstChildOfClass("Terrain") then
+	workspace.Terrain.Decorations = false
+end
+
+-- Remove post-processing effects
+for _, v in pairs(lighting:GetChildren()) do
+	if v:IsA("PostEffect") then
+		v.Enabled = false
+	end
+end
+
+-- Optional: Periodically re-check for new items added to the game
+game.DescendantAdded:Connect(function(obj)
+	if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") then
+		obj.Enabled = false
+	elseif obj:IsA("Decal") then
+		obj.Transparency = 1
+	elseif obj:IsA("Texture") then
+		obj:Destroy()
+	end
+end)
+
+print("FPS boost script activated.")
